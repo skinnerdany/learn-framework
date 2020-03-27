@@ -4,7 +4,21 @@ class controller
 {
     protected $layoutFile = 'index';
     protected $templatesDir = false;
+    protected $models = [];
 
+    protected function getModel($modelName, $newModel = false)
+    {
+        include_once core::app()->models_dir . $modelName . '.php';
+        if ($newModel) {
+            return new $modelName;
+        }
+
+        if (!isset($this->models[$modelName])) {
+            $this->models[$modelName] = new $modelName;
+        }
+        return $this->models[$modelName];
+    }
+    
     protected function renderLayout($data = [])
     {
         foreach ($data as $varName => $varValue) {
@@ -38,6 +52,5 @@ class controller
         } else {
             echo $outputData;
         }
-        //print_r($outputData);
     }
 }

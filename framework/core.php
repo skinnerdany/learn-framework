@@ -9,6 +9,7 @@ class core
     private static $app = false;
     private $config = [];
     public $input = false;
+    public $user = false;
 
     private function __construct(){}
     private function __clone(){}
@@ -32,6 +33,7 @@ class core
     {
         $this->config = $config;
         $this->input = new inputs;
+        $this->user = new user;
 
         try {
             $this->runController(
