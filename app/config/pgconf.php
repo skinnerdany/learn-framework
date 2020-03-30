@@ -3,7 +3,7 @@
 return [
     'host' => 'localhost',
     'port' => 5432,
-    'login' => '',
-    'password' => '',
+    'login' => 'skinner',
+    'password' => 'GardenState001',
     'name' => 'hackeru'
 ];

@@ -10,6 +10,7 @@
         <?php echo $error == '' ? '' : 'Ошибка: ' . $error; ?><br />
         <?php echo $modal; ?><br />
         <?php echo $content; ?>
+        <br />
         <a href="/users/forgot">Забыли пароль</a><br />
         <a href="/users/login">Войти</a><br />
         <a href="/users/registration">Зарегестрироваться</a>

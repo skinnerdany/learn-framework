@@ -2,6 +2,36 @@
 
 class controllerUsers extends controller
 {
+    public function actionRoles()
+    {
+        $model = $this->getModel('roles');
+        $roles = $model->getRoles();
+        echo $this->renderLayout([
+            'error' => '',
+            'modal' => '',
+            'content' => $this->renderTemplate('roles_list', [
+                'roles' => $roles
+            ])
+        ]);
+    }
+
+    public function actionRoleEdit()
+    {
+        $model = $this->getModel('roles');
+        $role = $model->getRoles((int) (core::app()->input->get['id'] ?? 0));
+
+        $role['privileges'] = $model->getPrivileges();
+        
+        $role['checked_privileges'] = $model->getPrivileges((int) (core::app()->input->get['id'] ?? 0));
+        //echo '<pre>';print_r($role);die();
+        
+        echo $this->renderLayout([
+            'error' => '',
+            'modal' => '',
+            'content' => $this->renderTemplate('role_edit', $role)
+        ]);
+    }
+    
     public function actionLogout()
     {
         core::app()->user->logout();

@@ -18,9 +18,11 @@ class pgsql
     
     public function query($sql)
     {
-        return pg_fetch_all(
-                pg_query($this->connection, $sql)
-            );
+        $result = pg_fetch_all(pg_query($this->connection, $sql));
+        if (empty($result)) {
+            $result = [];
+        }
+        return $result;
     }
     
     public function escape($value)
