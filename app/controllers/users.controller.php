@@ -2,6 +2,44 @@
 
 class controllerUsers extends controller
 {
+    public function accessRules()
+    {
+        return [
+            
+            [
+                'allow',
+                'action' => ['attachRoles'],
+                'roles' => [
+                    'user_role', "role_change"
+                ]
+            ],
+            /**/
+            [
+                'deny',
+                'action' => ['attachRoles'],
+                'roles' => [
+                    'user_role', "role_change"
+                ]
+            ],
+        ];
+    }
+    
+    public function actionAttachRoles()
+    {
+        if (core::app()->input->form) {
+            $this->getModel('users')->saveRole(core::app()->input->post);
+        }
+
+        echo $this->renderLayout([
+            'error' => '',
+            'modal' => '',
+            'content' => $this->renderTemplate('attach_roles', [
+                'users' => $this->getModel('users')->getUsers(),
+                'roles' => $this->getModel('roles')->getRoles()
+            ])
+        ]);
+    }
+    
     public function actionRoles()
     {
         $model = $this->getModel('roles');
@@ -17,16 +55,28 @@ class controllerUsers extends controller
 
     public function actionRoleEdit()
     {
+        $roleId = (int) (core::app()->input->post['id'] ?? core::app()->input->get['id'] ?? 0);
+        $error = '';
+        if (core::app()->input->form) {
+            try {
+                $this->getModel('roles')->saveRole(core::app()->input->post);
+                header('Location: /users/roles');
+            } catch (Exception $e) {
+                $error = $e->getMessage();
+            }
+        }
         $model = $this->getModel('roles');
-        $role = $model->getRoles((int) (core::app()->input->get['id'] ?? 0));
+        $role = $model->getRoles($roleId);
 
         $role['privileges'] = $model->getPrivileges();
         
-        $role['checked_privileges'] = $model->getPrivileges((int) (core::app()->input->get['id'] ?? 0));
-        //echo '<pre>';print_r($role);die();
+        $role['checked_privileges'] = [];
+        if ($roleId > 0) {
+            $role['checked_privileges'] = $model->getPrivileges($roleId);
+        }
         
         echo $this->renderLayout([
-            'error' => '',
+            'error' => $error,
             'modal' => '',
             'content' => $this->renderTemplate('role_edit', $role)
         ]);

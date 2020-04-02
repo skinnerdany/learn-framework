@@ -5,19 +5,6 @@ class controllerCatalog extends controller
 {
     public function actionList()
     {
-        echo '<pre>';
-        $model = $this->getModel('test', true);
-
-        //$model->email = 'test@test.ru';
-        //$model->password = md5('test');
-        //$model->salt = md5('zzz');
-        //$model->id = 1;
-        $model->name = md5('testzzz');
-        $model->description = md5('test');
-        
-        $model->save();
-        
-        
         // ................
         //$model = $this->getModel('users');
         /*

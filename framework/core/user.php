@@ -21,14 +21,16 @@ class user
         if (!isset($this->id)) {
             // если !п.1) то проверить, есть ли токен в куки пользователя
             if (isset($_COOKIE['token'])) {
+        //die('aaa');
                 // по токену получаем запись пользователя из бд
-                $user = $this->db->select('users', 'id, email, token, status', ['token' => $_COOKIE['token']]);
+                $user = $this->db->select('users', 'id, email, token, status, role_id, admin', ['token' => $_COOKIE['token']]);
                 if (!empty($user)) {
                     $user = reset($user);
                     // сохраняем запись из БД в сессию
                     foreach ($user as $param => $value) {
                         $this->$param = $value;
                     }
+                    $this->privileges = $this->getPrivileges($user['role_id']);
                 }
             }
         }
@@ -38,6 +40,30 @@ class user
             setcookie('token', $this->token, time() + 365 * 86400, '/');
             $this->isUser = true;
         }
+    }
+    
+    public function checkPrivilege($code)
+    {
+        return $this->admin == 1 || isset($this->privileges[$code]);
+    }
+    
+    protected function getPrivileges($roleId)
+    {
+        $sql = 'select 
+                    p.code 
+                from 
+                    roles_privileges rp
+                join
+                    privileges p
+                        ON p.id=rp.privilege_id
+                where 
+                    rp.role_id = ' . $this->db->escape($roleId);
+        $result = $this->db->query($sql);
+        $privileges = [];
+        foreach ($result as $privilege) {
+            $privileges[$privilege['code']] = $privilege['code'];
+        }
+        return $privileges;
     }
 
     public function __get($name)
@@ -110,6 +136,8 @@ class user
         foreach ($user as $param => $value) {
             $this->$param = $value;
         }
+        $p = $this->getPrivileges($user['role_id']);
+        $this->privileges = $this->getPrivileges($user['role_id']);
         // генерирую токен
         $token = $this->getSalt();
         // сохраняю токен в БД

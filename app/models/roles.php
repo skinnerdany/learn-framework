@@ -2,6 +2,42 @@
 
 class roles extends model
 {
+    public function saveRole($roleData)
+    {
+        $id = $roleData['id'] ?? 0;
+        $privileges = $roleData['privileges'] ?? [];
+        unset($roleData['id'], $roleData['privileges']);
+
+        if ($id == 0) {
+            $checkRole = self::$db->select('roles', 'id', ['name' => $roleData['name']]);
+            if (!empty($checkRole)) {
+                throw new Exception('role_duplicate');
+            }
+            $id = self::$db->insert('roles', $roleData, true);
+        } else {
+            $checkRole = self::$db->select('roles', '*', ['name' => $roleData['name']]);
+            if (!empty($checkRole) && $id != $checkRole[0]['id']) {
+                throw new Exception('role_duplicate');
+            }
+            self::$db->update('roles', $roleData, ['id' => $id]);
+        }
+        
+        self::$db->delete('roles_privileges', ['role_id' => $id]);
+        foreach ($privileges as $privilege) {
+            self::$db->insert('roles_privileges', ['role_id' => $id, 'privilege_id' => $privilege]);
+        }
+    }
+    
+    public function getIndexRoles()
+    {
+        $roles = $this->getRoles();
+        $out = [];
+        foreach ($roles as $role) {
+            $out[$role['id']] = $role;
+        }
+        return $out;
+    }
+    
     public function getRoles($id = 0)
     {
         $where = [];

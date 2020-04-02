@@ -5,6 +5,48 @@ class controller
     protected $layoutFile = 'index';
     protected $templatesDir = false;
     protected $models = [];
+    
+    public function __construct()
+    {
+        $this->checkActionAccess();
+    }
+    
+    
+    protected function checkActionAccess()
+    {
+        $accessMap = $this->accessRules();
+        foreach ($accessMap as $item) {
+            $action = $item[0];
+            if (in_array(core::app()->input->action, $item['action'])) {
+                $hasPrivilege = false;
+                foreach ($item['roles'] as $privilege) {
+                    if (core::app()->user->checkPrivilege($privilege)) {
+                        $hasPrivilege = true;
+                    }
+                }
+                if ($action == 'deny') {
+                    if ($hasPrivilege) {
+                        throw new httpException('access deny', 404);
+                    } else {
+                        return;
+                    }
+                }
+                if ($action == 'allow') {
+                    if (!$hasPrivilege) {
+                        throw new httpException('access deny', 404);
+                    } else {
+                        return;
+                    }
+                }
+                /**/
+            }
+        }
+    }
+    
+    public function accessRules()
+    {
+        return [];
+    }
 
     protected function getModel($modelName, $newModel = false)
     {
