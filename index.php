@@ -1,5 +1,6 @@
 <?php
 
+//echo '<pre>';print_r($_REQUEST);die();
 $config = include './app/config/main.php';
 
 if (DEBUG) {

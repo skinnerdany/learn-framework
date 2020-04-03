@@ -3,6 +3,27 @@
 
 class controllerCatalog extends controller
 {
+    public function actionIndex()
+    {
+        $fg = new formGenerator('/test/add', 'POST');
+        $fg->attachInput('hidden', 'id', random_int(0, 100));
+        $fg->attachInputByArray([
+            'type' => 'email',
+            'name' => 'userMail',
+            'value' => 'test@test.ru'
+        ]);
+        $fg->attachInputByArray([
+            'type' => 'submit',
+            'name' => 'go',
+            'value' => 'Сохранить'
+        ]);
+        echo $this->renderLayout([
+            'error' => '',
+            'modal' => '',
+            'content' => $fg->generateForm()
+        ]);
+    }
+    
     public function actionList()
     {
         // ................

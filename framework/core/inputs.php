@@ -22,9 +22,26 @@ class inputs
         $this->controller = empty($_GET[core::app()->controller_request_param]) ? 
                 core::app()->default_controller :
                 $_GET[core::app()->controller_request_param];
+        /*
+        switch (strtolower($_SERVER['REQUEST_METHOD'])) {
+            case 'get':
+                $this->action = isset($_GET['id']) ? 'view' : 'get';
+                break;
+            case 'post':
+                $this->action = 'create';
+                break;
+            case 'delete':
+                $this->action = 'delete';
+                break;
+            case 'put':
+                $this->action = 'update';
+                break;
+        }
+        /**/
         $this->action = empty($_GET[core::app()->action_request_param]) ? 
                 core::app()->default_action :
                 $_GET[core::app()->action_request_param];
+        /**/
 
         if (isset($this->request['go'])) {
             $this->form = 1;
